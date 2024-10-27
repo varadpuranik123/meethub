@@ -6,18 +6,38 @@ import MeetingSetup from '@/components/MeetingSetup';
 import { useGetCallById } from '@/hooks/useGetCallById';
 import { useUser } from '@clerk/nextjs'
 import { StreamCall, StreamTheme } from '@stream-io/video-react-sdk';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 
 const Meeting = () => {
-  const { isLoaded } = useUser();
+  const { isLoaded, isSignedIn, user } = useUser();
   const [isSetupComplete, setIsSetupComplete] = useState(false)
+  const [error, setError] = useState<string | null>(null);
   const params = useParams()
   const id = params?.id as string
 
   const { call, isCallLoading } = useGetCallById(id);
 
-  if(!isLoaded || isCallLoading) return <Loader />
+  useEffect(() => {
+    console.log('User loaded:', isLoaded);
+    console.log('User signed in:', isSignedIn);
+    console.log('Call loading:', isCallLoading);
+    console.log('Call:', call);
+  }, [isLoaded, isSignedIn, isCallLoading, call]);
+
+  if (!isLoaded || isCallLoading) return <Loader />
+
+  if (!isSignedIn) {
+    return <div>Please sign in to access this meeting.</div>
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
+
+  if (!call) {
+    return <div>No call found with ID: {id}</div>
+  }
 
   return (
     <main className="h-screen w-full">
