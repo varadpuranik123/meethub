@@ -10,9 +10,8 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 
 const Meeting = () => {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
   const [isSetupComplete, setIsSetupComplete] = useState(false)
-  const [error, setError] = useState<string | null>(null);
   const params = useParams()
   const id = params?.id as string
 
@@ -29,10 +28,6 @@ const Meeting = () => {
 
   if (!isSignedIn) {
     return <div>Please sign in to access this meeting.</div>
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>
   }
 
   if (!call) {
